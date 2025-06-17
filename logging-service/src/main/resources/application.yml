@@ -1,0 +1,53 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: logging-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        namespace: public
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/logging_db?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: root
+
+mybatis-plus:
+  configuration:
+    # MyBatis 配置
+    map-underscore-to-camel-case: true
+  global-config:
+    # 全局配置
+    db-config:
+      # 数据库配置
+      id-type: assign_id
+  mapper-locations: classpath:/mapper/*.xml
+
+knife4j:
+  enable: true
+  openapi:
+    title: 日志服务
+    group:
+      default:
+        group-name: default
+        api-rule: package
+        api-rule-resources:
+          - com.wipe.loggingservice.controller
+seata:
+  data-source-proxy-mode: AT
+  registry:
+    nacos:
+      application: seata-server
+      group: public
+      server-addr: 127.0.0.1:8848
+  tx-service-group: default-tx-group
+  service:
+    vgroup-mapping:
+      default-tx-group: sh
+    grouplist:
+      sh: 127.0.0.1:8091
+rocketmq:
+  name-server: localhost:9876

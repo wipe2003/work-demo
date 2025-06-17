@@ -1,0 +1,84 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: user-service
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        namespace: public
+  shardingsphere:
+    datasource:
+      names: user_db
+      user_db:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/user_db?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false
+        username: root
+        password: root
+    rules:
+      sharding:
+#        扩展：在同一数据库下的水平分表还可以 通过 ThreadLocal + AOP + DynamicTableNameInnerInterceptor(mybatis-plus) 实现
+        tables:
+          user:
+            actual-data-nodes: user_db.user_${0..1}
+            table-strategy:
+              standard:
+                sharding-column: user_id
+                sharding-algorithm-name: user-sharding-algorithm
+        sharding-algorithms:
+          user-sharding-algorithm:
+            type: MOD
+            props:
+              sharding-count: 2
+
+mybatis-plus:
+  configuration:
+    # MyBatis 配置
+    map-underscore-to-camel-case: true
+  global-config:
+    # 全局配置
+    db-config:
+      # 数据库配置
+      id-type: assign_id
+  mapper-locations: classpath:/mapper/*.xml
+
+jwt:
+  ttl: 60
+  issuer: wipe
+  subject: subject
+
+knife4j:
+  enable: true
+  openapi:
+    title: 用户服务
+    group:
+      default:
+        group-name: default
+        api-rule: package
+        api-rule-resources:
+          - com.wipe.userservice.controller
+
+seata:
+  data-source-proxy-mode: AT
+  registry:
+    nacos:
+      application: seata-server
+      group: public
+      server-addr: 127.0.0.1:8848
+  tx-service-group: default-tx-group
+  service:
+    vgroup-mapping:
+      default-tx-group: sh
+    grouplist:
+      sh: 127.0.0.1:8091
+  enable-auto-data-source-proxy: false
+
+rocketmq:
+  name-server: localhost:9876
+  producer:
+    group: work-group
+
+
