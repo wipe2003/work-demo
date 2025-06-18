@@ -1,7 +1,14 @@
 package com.wipe.userservice.service;
 
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.wipe.commonmodel.model.dto.BasePageRequest;
 import com.wipe.userservice.pojo.domain.User;
+import com.wipe.userservice.pojo.dto.UserLoginRequest;
+import com.wipe.userservice.pojo.dto.UserQueryRequest;
+import com.wipe.userservice.pojo.dto.UserRegisterRequest;
+import com.wipe.userservice.pojo.vo.UserVo;
 
 
 /**
@@ -10,5 +17,39 @@ import com.wipe.userservice.pojo.domain.User;
 * @createDate 2025-06-16 16:03:54
 */
 public interface UsersService extends IService<User> {
+
+    /**
+     * 用户注册
+     *
+     * @param userRegisterRequest req
+     * @return id
+     */
+    Long userRegister(UserRegisterRequest userRegisterRequest);
+
+    /**
+     * 用户登录
+     *
+     * @param loginRequest login Request
+     * @return jwt
+     */
+    String userLogin(UserLoginRequest loginRequest);
+
+
+    /**
+     * 获取用户列表
+     * @param roleCode 根据用户权限码区分
+     * @param pageRequest pageRequest
+     * @return page
+     */
+    Page<UserVo> listUser(String roleCode, BasePageRequest pageRequest);
+
+    /**
+     * 获取查询条件工具方法
+     *
+     * @param userQueryRequest req
+     * @return wrapper
+     */
+    LambdaQueryChainWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
+
 
 }

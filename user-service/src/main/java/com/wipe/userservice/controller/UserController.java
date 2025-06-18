@@ -1,16 +1,19 @@
 package com.wipe.userservice.controller;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wipe.commonmodel.AxiosResult;
-import com.wipe.commonmodel.enums.EnumStatusCode;
-import com.wipe.commonmodel.exception.ServiceException;
-import com.wipe.userservice.pojo.domain.User;
-import com.wipe.userservice.rpc.LoggingClient;
+import com.wipe.commonmodel.model.dto.BasePageRequest;
+import com.wipe.userservice.manager.perm.HandleByPermManager;
+import com.wipe.userservice.pojo.dto.UserLoginRequest;
+import com.wipe.userservice.pojo.dto.UserRegisterRequest;
+import com.wipe.userservice.pojo.vo.UserVo;
+import com.wipe.userservice.rpc.PermissionClient;
 import com.wipe.userservice.service.UsersService;
-import io.seata.spring.annotation.GlobalTransactional;
+import com.wipe.userservice.util.UserHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.time.LocalDateTime;
+import javax.validation.Valid;
 
 /**
  * @author wipe
@@ -24,7 +27,11 @@ public class UserController {
     private UsersService usersService;
 
     @Resource
-    private LoggingClient loggingClient;
+    private HandleByPermManager handleByPermManager;
+
+    @Resource
+    private PermissionClient permissionClient;
+
 
     /**
      * 用户注册
@@ -32,18 +39,23 @@ public class UserController {
      * @return userId
      */
     @PostMapping("/register")
-    public AxiosResult<Long> register() {
-        return AxiosResult.success(1L);
+    public AxiosResult<Long> register(
+            @RequestBody @Valid UserRegisterRequest userRegisterRequest) {
+        Long userId = usersService.userRegister(userRegisterRequest);
+        return AxiosResult.success(userId);
     }
 
     /**
      * 用户登录
+     * tip：可将 jwt 存入 redis 保证凭证可控
      *
      * @return jwt
      */
     @PostMapping("/login")
-    public AxiosResult<String> login() {
-        return AxiosResult.success("1L");
+    public AxiosResult<String> login(
+            @RequestBody @Valid UserLoginRequest loginRequest) {
+        String token = usersService.userLogin(loginRequest);
+        return AxiosResult.success(token);
     }
 
 
@@ -51,8 +63,15 @@ public class UserController {
      * 分页用户列表
      */
     @GetMapping("/users")
-    public AxiosResult<String> users() {
-        return AxiosResult.success("1L");
+    public AxiosResult<Page<UserVo>> users(
+            @RequestParam("current") Integer current, @RequestParam("size") Integer size) {
+        // 查询角色码
+        Long userId = UserHolder.get().getUserId();
+        String roleCode = permissionClient.roleCode(userId).getData();
+        // 获取用户列表
+        BasePageRequest pageRequest = new BasePageRequest(current, size);
+        Page<UserVo> page = usersService.listUser(roleCode, pageRequest);
+        return AxiosResult.success(page);
     }
 
     /**
@@ -79,38 +98,5 @@ public class UserController {
         return AxiosResult.success("1L");
     }
 
-    @GetMapping("/test")
-    public AxiosResult<String> test() {
-        User user = new User();
-        user.setUsername("wipe");
-        user.setPassword("123");
-        user.setEmail("123");
-        user.setPhone("123");
-        user.setGmtCreate(LocalDateTime.now());
-        usersService.save(user);
-        return AxiosResult.success("1L");
-    }
 
-    @GetMapping("/feign/test")
-    public AxiosResult<String> feignTest() {
-        String test = loggingClient.test();
-        return AxiosResult.success(test);
-    }
-
-    @GetMapping("/test/seata")
-    @GlobalTransactional
-    public AxiosResult<String> testSeata() {
-        User user = new User();
-        user.setUsername("wipeeeeeee");
-        user.setPassword("123");
-        user.setEmail("123");
-        user.setPhone("123");
-        user.setGmtCreate(LocalDateTime.now());
-        usersService.save(user);
-        loggingClient.log();
-        if (true) {
-            throw new ServiceException(EnumStatusCode.ERROR_OPERATION, "测试异常");
-        }
-        return AxiosResult.success("1L");
-    }
 }

@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wipe.permissionservice.mapper.UserRolesMapper">
 
-    <resultMap id="BaseResultMap" type="com.wipe.permissionservice.pojo.domain.UserRoles">
+    <resultMap id="BaseResultMap" type="com.wipe.commonmodel.model.domain.permission.UserRoles">
             <id property="id" column="id" jdbcType="BIGINT"/>
             <result property="userId" column="user_id" jdbcType="BIGINT"/>
             <result property="roleId" column="role_id" jdbcType="INTEGER"/>

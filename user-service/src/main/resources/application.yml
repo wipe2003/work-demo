@@ -46,9 +46,10 @@ mybatis-plus:
   mapper-locations: classpath:/mapper/*.xml
 
 jwt:
-  ttl: 60
+  ttl: 259200
   issuer: wipe
-  subject: subject
+  subject: auth-token
+  secret-key: jK7nQ2pR9vX5sL8yT3wF6cZ1bG4dH0eM
 
 knife4j:
   enable: true

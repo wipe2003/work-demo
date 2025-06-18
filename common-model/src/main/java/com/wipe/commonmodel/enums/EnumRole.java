@@ -1,6 +1,5 @@
-package com.wipe.permissionservice.pojo.enums;
+package com.wipe.commonmodel.enums;
 
-import com.wipe.commonmodel.enums.EnumStatusCode;
 import com.wipe.commonmodel.exception.ServiceException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,19 +15,19 @@ public enum EnumRole {
     /**
      * 超级管理员
      */
-    SUPER_ADMIN(1, "super_admin"),
+    SUPER_ADMIN(1L, "super_admin"),
 
     /**
      * 管理员
      */
-    ADMIN(3, "admin"),
+    ADMIN(3L, "admin"),
 
     /**
      * 普通用户
      */
-    USER(2, "user");
+    USER(2L, "user");
 
-    private final Integer roleId;
+    private final Long roleId;
     private final String roleCode;
 
     public static EnumRole fromCode(String roleCode) {

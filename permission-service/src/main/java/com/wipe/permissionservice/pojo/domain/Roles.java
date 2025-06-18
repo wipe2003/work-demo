@@ -21,7 +21,7 @@ public class Roles implements Serializable {
      * 角色 id
      */
     @TableId
-    private Integer roleId;
+    private Long roleId;
 
     /**
      * 角色码

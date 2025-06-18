@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ServiceException.class)
     public AxiosResult<Object> handleServiceException(ServiceException e) {
         // 记录异常信息，以便于调试和日志分析
-        log.error("ServiceException", e);
+        log.error("ServiceException:{}", e.getMessage());
         // 返回一个错误的AxiosResult对象，包含异常的代码和消息
         return AxiosResult.error(e.getCode(), e.getMessage());
     }
@@ -39,7 +39,9 @@ public class GlobalExceptionHandler {
         if (fieldError == null) {
             return AxiosResult.error(EnumStatusCode.ERROR_PARAMS);
         }
-        return AxiosResult.error(EnumStatusCode.ERROR_PARAMS, fieldError.getDefaultMessage());
+        String defaultMessage = fieldError.getDefaultMessage();
+        log.error("参数错误：{}", defaultMessage);
+        return AxiosResult.error(EnumStatusCode.ERROR_PARAMS, defaultMessage);
     }
 
     @ExceptionHandler(Exception.class)

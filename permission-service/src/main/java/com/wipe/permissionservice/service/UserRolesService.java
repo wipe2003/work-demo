@@ -1,8 +1,10 @@
 package com.wipe.permissionservice.service;
 
 
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.wipe.permissionservice.pojo.domain.UserRoles;
+import com.wipe.commonmodel.model.domain.permission.UserRoles;
+import com.wipe.permissionservice.pojo.dto.UserRoleQueryRequest;
 
 /**
 * @author 29770
@@ -11,4 +13,11 @@ import com.wipe.permissionservice.pojo.domain.UserRoles;
 */
 public interface UserRolesService extends IService<UserRoles> {
 
+
+    /**
+     * 获取查询条件
+     *
+     * @return wrapper
+     */
+    LambdaQueryChainWrapper<UserRoles> getQueryWrapper(UserRoleQueryRequest request);
 }

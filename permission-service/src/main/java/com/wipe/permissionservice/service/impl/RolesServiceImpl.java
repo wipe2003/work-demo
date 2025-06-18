@@ -2,8 +2,8 @@ package com.wipe.permissionservice.service.impl;
 
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.wipe.permissionservice.pojo.domain.Roles;
 import com.wipe.permissionservice.mapper.RolesMapper;
+import com.wipe.permissionservice.pojo.domain.Roles;
 import com.wipe.permissionservice.service.RolesService;
 import org.springframework.stereotype.Service;
 

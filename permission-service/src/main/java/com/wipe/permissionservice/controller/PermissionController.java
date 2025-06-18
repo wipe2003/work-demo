@@ -1,15 +1,20 @@
 package com.wipe.permissionservice.controller;
 
-import com.wipe.permissionservice.pojo.domain.Roles;
-import com.wipe.permissionservice.pojo.enums.EnumRole;
-import com.wipe.permissionservice.service.RolesService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import cn.hutool.core.util.ObjUtil;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.wipe.commonmodel.AxiosResult;
+import com.wipe.commonmodel.enums.EnumRole;
+import com.wipe.commonmodel.enums.EnumStatusCode;
+import com.wipe.commonmodel.util.ThrowUtil;
+import com.wipe.commonmodel.model.domain.permission.UserRoles;
+import com.wipe.commonmodel.model.dto.permission.UserRolePageRequest;
+import com.wipe.permissionservice.pojo.dto.UserRoleQueryRequest;
+import com.wipe.permissionservice.service.PermissionService;
+import com.wipe.permissionservice.service.UserRolesService;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author wipe
@@ -20,24 +25,61 @@ import java.util.List;
 public class PermissionController {
 
     @Resource
-    private RolesService rolesService;
+    private PermissionService permissionService;
 
-    @GetMapping("/index")
-    public String index() {
-        Roles s = new Roles();
-        s.setRoleId(EnumRole.SUPER_ADMIN.getRoleId());
-        s.setRoleCode(EnumRole.SUPER_ADMIN.getRoleCode());
-        Roles a = new Roles();
-        a.setRoleId(EnumRole.ADMIN.getRoleId());
-        a.setRoleCode(EnumRole.ADMIN.getRoleCode());
-        Roles u = new Roles();
-        u.setRoleId(EnumRole.USER.getRoleId());
-        u.setRoleCode(EnumRole.USER.getRoleCode());
-        List<Roles> rolesList = new ArrayList<>();
-        rolesList.add(s);
-        rolesList.add(a);
-        rolesList.add(u);
-        rolesService.saveBatch(rolesList);
-        return "index";
+    @Resource
+    private UserRolesService userRolesService;
+
+    /**
+     * 绑定默认角色
+     *
+     * @param userId 用户id
+     * @return 绑定结果
+     */
+    @PostMapping("/bind_default")
+    public AxiosResult<Boolean> bindDefaultRole(@RequestParam("userId") Long userId) {
+        ThrowUtil.throwIf(userId == null, EnumStatusCode.ERROR_PARAMS, "用户id不能为空");
+        permissionService.bindDefaultRole(userId);
+        return AxiosResult.success();
+    }
+
+    /**
+     * 获取角色码
+     *
+     * @return 角色码
+     */
+    @GetMapping("/role_code")
+    public AxiosResult<String> roleCode(@RequestParam("userId") Long userId) {
+        String userRoleCode = permissionService.getUserRoleCode(userId);
+        return AxiosResult.success(userRoleCode);
+    }
+
+
+    /**
+     * 获取用户角色列表
+     *
+     * @param userRolePageRequest 请求参数
+     * @return 用户角色列表
+     */
+    @PostMapping("/users")
+    public AxiosResult<Page<UserRoles>> listUserRole(
+            @RequestBody UserRolePageRequest userRolePageRequest) {
+        // 参数校验
+        ThrowUtil.throwIf(userRolePageRequest == null,
+                EnumStatusCode.ERROR_PARAMS, "参数不能为空");
+        String permissionCode = userRolePageRequest.getPermissionCode();
+        Integer current = userRolePageRequest.getCurrent();
+        Integer size = userRolePageRequest.getSize();
+        boolean flag = StrUtil.isBlank(permissionCode) || ObjUtil.isNull(current) || ObjUtil.isNull(size);
+        ThrowUtil.throwIf(flag, EnumStatusCode.ERROR_PARAMS, "参数不能为空");
+
+        Page<UserRoles> page = new Page<>(current, size);
+        // 转化枚举
+        EnumRole role = EnumRole.fromCode(permissionCode);
+        // 查询
+        UserRoleQueryRequest queryRequest = new UserRoleQueryRequest();
+        queryRequest.setRoleId(role.getRoleId());
+        Page<UserRoles> rolesPage = userRolesService.getQueryWrapper(queryRequest).page(page);
+        return AxiosResult.success(rolesPage);
     }
 }

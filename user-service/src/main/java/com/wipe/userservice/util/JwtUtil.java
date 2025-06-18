@@ -6,12 +6,15 @@ import com.wipe.commonmodel.enums.EnumStatusCode;
 import com.wipe.commonmodel.exception.ServiceException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.InvalidKeyException;
+import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Date;
 import java.util.Map;
@@ -21,14 +24,14 @@ import java.util.Map;
  * @date 2025/6/16 下午6:00
  */
 @Slf4j
-@Component
 @Getter
-public class JwtUtil {
+@Component
+public class JwtUtil implements InitializingBean {
 
-    private JwtUtil() {
+    public JwtUtil() {
     }
 
-    private static final SecretKey KEY = Jwts.SIG.HS256.key().build();
+    private SecretKey key;
 
     @Value("${jwt.ttl}")
     private int ttl;
@@ -39,8 +42,11 @@ public class JwtUtil {
     @Value("${jwt.subject}")
     private String subject;
 
+    @Value("${jwt.secret-key}")
+    private String secretKey;
 
-    public String createJwt(Map<String, String> claim) {
+
+    public String createJwt(Map<String, Object> claim) {
         // 令牌id
         String uuid = UUID.randomUUID().toString(true);
         Date ttl = Date.from(Instant.now().plusSeconds(this.ttl));
@@ -48,11 +54,6 @@ public class JwtUtil {
         try {
             return Jwts.builder()
                     .id(uuid)
-                    // 设置头部信息header
-                    .header()
-                    .add("typ", "JWT")
-                    .add("alg", "HS256")
-                    .and()
                     // 设置自定义负载信息payload
                     .claims(claim)
                     // 过期日期
@@ -64,7 +65,7 @@ public class JwtUtil {
                     // 签发者
                     .issuer(issuer)
                     // 签名
-                    .signWith(KEY)
+                    .signWith(key)
                     .compact();
         } catch (InvalidKeyException e) {
             throw new ServiceException(EnumStatusCode.ERROR_OPERATION, "令牌生成失败" + e.getMessage());
@@ -80,7 +81,7 @@ public class JwtUtil {
     public Jws<Claims> parse(String token) {
         try {
             return Jwts.parser()
-                    .verifyWith(KEY)
+                    .verifyWith(key)
                     .build()
                     .parseSignedClaims(token);
         } catch (JwtException | IllegalArgumentException e) {
@@ -98,4 +99,8 @@ public class JwtUtil {
     }
 
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+    }
 }

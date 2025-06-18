@@ -1,4 +1,4 @@
-package com.wipe.permissionservice.pojo.domain;
+package com.wipe.commonmodel.model.domain.permission;
 
 
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -31,7 +31,7 @@ public class UserRoles implements Serializable {
     /**
      * 角色 id
      */
-    private Integer roleId;
+    private Long roleId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

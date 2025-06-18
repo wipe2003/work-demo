@@ -11,4 +11,5 @@ import com.wipe.permissionservice.pojo.domain.Roles;
 */
 public interface RolesService extends IService<Roles> {
 
+
 }
