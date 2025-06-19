@@ -1,7 +1,7 @@
 package com.wipe.userservice.controller;
 
 import com.wipe.commonmodel.AxiosResult;
-import com.wipe.userservice.util.JwtUtil;
+import com.wipe.commonmodel.util.JwtUtil;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwsHeader;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;

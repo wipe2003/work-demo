@@ -53,11 +53,15 @@ public class PermissionServiceImpl implements PermissionService {
 
     @Override
     public void upgradeToAdmin(Long userId) {
-
+        userRolesService.lambdaUpdate()
+                .set(UserRoles::getRoleId, EnumRole.ADMIN.getRoleId())
+                .eq(UserRoles::getUserId, userId);
     }
 
     @Override
     public void downgradeToUser(Long userId) {
-
+        userRolesService.lambdaUpdate()
+                .set(UserRoles::getRoleId, EnumRole.USER.getRoleId())
+                .eq(UserRoles::getUserId, userId);
     }
 }

@@ -1,11 +1,16 @@
 package com.wipe.userservice.manager.perm;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wipe.commonmodel.enums.EnumRole;
+import com.wipe.commonmodel.enums.EnumStatusCode;
+import com.wipe.commonmodel.exception.ServiceException;
 import com.wipe.commonmodel.model.domain.permission.UserRoles;
 import com.wipe.commonmodel.model.dto.permission.UserRolePageRequest;
 import com.wipe.userservice.pojo.domain.User;
-import com.wipe.userservice.rpc.PermissionClient;
+import com.wipe.userservice.pojo.dto.UserResetPasswordRequest;
+import com.wipe.userservice.pojo.dto.UserUpdateRequest;
+import com.wipe.userservice.rpc.perm.PermissionClient;
 import com.wipe.userservice.service.UsersService;
 import org.springframework.stereotype.Component;
 
@@ -53,6 +58,46 @@ public class AdminHandler extends AbstractPermissionHandler {
         userPage.setSearchCount(userRolesPage.searchCount());
         userPage.setMaxLimit(userRolesPage.maxLimit());
         return userPage;
+    }
+
+    /**
+     * 查询用户信息
+     *
+     * @param userId userId
+     * @return 普通用户信息
+     */
+    @Override
+    protected User userInfo(Long userId) {
+        // 权限检查
+        checkRoleIsUser(userId);
+        // 查询用户信息
+        return getUsersService().getById(userId);
+    }
+
+    @Override
+    protected void modifyUserInfo(UserUpdateRequest userUpdateRequest) {
+        checkRoleIsUser(userUpdateRequest.getUserId());
+        User user = new User();
+        BeanUtil.copyProperties(userUpdateRequest, user);
+        getUsersService().updateById(user);
+    }
+
+    @Override
+    protected void modifyPassword(UserResetPasswordRequest userResetPasswordRequest) {
+        checkRoleIsUser(userResetPasswordRequest.getUserId());
+        getUsersService().resetPassword(userResetPasswordRequest);
+    }
+
+    /**
+     * 校验目标用户角色是否为普通用户
+     *
+     * @param userId userId
+     */
+    private void checkRoleIsUser(Long userId) {
+        String roleCode = permissionClient.roleCode(userId).getData();
+        if (!EnumRole.USER.getRoleCode().equals(roleCode)) {
+            throw new ServiceException(EnumStatusCode.ERROR_NO_AUTH);
+        }
     }
 
     @Override

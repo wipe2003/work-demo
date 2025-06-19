@@ -8,6 +8,7 @@ import com.wipe.userservice.pojo.domain.User;
 import com.wipe.userservice.pojo.dto.UserLoginRequest;
 import com.wipe.userservice.pojo.dto.UserQueryRequest;
 import com.wipe.userservice.pojo.dto.UserRegisterRequest;
+import com.wipe.userservice.pojo.dto.UserResetPasswordRequest;
 import com.wipe.userservice.pojo.vo.UserVo;
 
 
@@ -42,6 +43,11 @@ public interface UsersService extends IService<User> {
      * @return page
      */
     Page<UserVo> listUser(String roleCode, BasePageRequest pageRequest);
+
+    /**
+     * 重置密码
+     */
+    void resetPassword(UserResetPasswordRequest userResetPasswordRequest);
 
     /**
      * 获取查询条件工具方法

@@ -1,4 +1,4 @@
-package com.wipe.userservice.rpc;
+package com.wipe.userservice.rpc.perm;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wipe.commonmodel.AxiosResult;

@@ -37,9 +37,11 @@
     <properties>
         <java.version>11</java.version>
         <knife4j.version>4.4.0</knife4j.version>
+        <sharding-sphere.version>5.2.0</sharding-sphere.version>
         <spring-cloud.version>2021.0.4</spring-cloud.version>
         <spring-cloud-alibaba.version>2021.0.4.0</spring-cloud-alibaba.version>
         <hutool.version>5.8.38</hutool.version>
+        <jjwt.version>0.12.3</jjwt.version>
         <mybatis-plus.version>3.5.12</mybatis-plus.version>
         <work-demo.version>0.0.1-SNAPSHOT</work-demo.version>
     </properties>
@@ -83,6 +85,12 @@
             <artifactId>hutool-all</artifactId>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -119,10 +127,22 @@
                 <version>${knife4j.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.apache.shardingsphere</groupId>
+                <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
+                <version>${sharding-sphere.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
             </dependency>
+
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jjwt.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.wipe</groupId>
                 <artifactId>common-model</artifactId>

@@ -49,3 +49,10 @@ seata:
       default-tx-group: sh
     grouplist:
       sh: 127.0.0.1:8091
+
+jwt:
+  enable: true
+  ttl: 259200
+  issuer: wipe
+  subject: auth-token
+  secret-key: jK7nQ2pR9vX5sL8yT3wF6cZ1bG4dH0eM

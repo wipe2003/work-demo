@@ -1,4 +1,4 @@
-package com.wipe.userservice.util;
+package com.wipe.commonmodel.util;
 
 
 import cn.hutool.core.lang.UUID;
@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -26,6 +27,7 @@ import java.util.Map;
 @Slf4j
 @Getter
 @Component
+@ConditionalOnProperty(prefix = "jwt", value = "enable", havingValue = "true")
 public class JwtUtil implements InitializingBean {
 
     public JwtUtil() {
@@ -33,7 +35,10 @@ public class JwtUtil implements InitializingBean {
 
     private SecretKey key;
 
-    @Value("${jwt.ttl}")
+    @Value("${jwt.enable}")
+    private boolean enabled;
+
+    @Value("${jwt.ttl:259200}")
     private int ttl;
 
     @Value("${jwt.issuer}")
@@ -101,6 +106,9 @@ public class JwtUtil implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        if (!enabled) {
+            throw new ServiceException(EnumStatusCode.ERROR_OPERATION, "JWT未启用");
+        }
         key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
     }
 }

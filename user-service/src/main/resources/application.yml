@@ -46,10 +46,15 @@ mybatis-plus:
   mapper-locations: classpath:/mapper/*.xml
 
 jwt:
+  enable: true
   ttl: 259200
   issuer: wipe
   subject: auth-token
   secret-key: jK7nQ2pR9vX5sL8yT3wF6cZ1bG4dH0eM
+
+# 权限管理责任链的顺序
+perm-manager:
+  ascend: 1
 
 knife4j:
   enable: true

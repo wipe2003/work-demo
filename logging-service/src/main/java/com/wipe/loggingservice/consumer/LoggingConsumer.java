@@ -9,7 +9,7 @@ import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
-import org.apache.rocketmq.spring.support.RocketMQConsumerLifecycleListener;
+import org.apache.rocketmq.spring.core.RocketMQPushConsumerLifecycleListener;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -21,7 +21,7 @@ import java.util.Map;
  */
 @Component
 @RocketMQMessageListener(consumerGroup = "logging-group", topic = TopicConstant.USER_REGISTER_TOPIC)
-public class LoggingConsumer implements RocketMQListener<MessageExt>, RocketMQConsumerLifecycleListener<DefaultMQPushConsumer> {
+public class LoggingConsumer implements RocketMQListener<MessageExt>, RocketMQPushConsumerLifecycleListener {
 
     private static final TypeReference<Map<String, Object>> MAP_TYPE_REFERENCE = new TypeReference<>() {
     };
@@ -29,10 +29,6 @@ public class LoggingConsumer implements RocketMQListener<MessageExt>, RocketMQCo
     @Resource
     private OperationLogsService operationLogsService;
 
-    @Override
-    public void prepareStart(DefaultMQPushConsumer consumer) {
-        consumer.setMaxReconsumeTimes(3);
-    }
 
     @Override
     public void onMessage(MessageExt messageExt) {
@@ -45,5 +41,10 @@ public class LoggingConsumer implements RocketMQListener<MessageExt>, RocketMQCo
         logs.setAction((String) payload.get("action"));
         logs.setDetail((String) payload.get("detail"));
         operationLogsService.save(logs);
+    }
+
+    @Override
+    public void prepareStart(DefaultMQPushConsumer consumer) {
+        consumer.setMaxReconsumeTimes(3);
     }
 }

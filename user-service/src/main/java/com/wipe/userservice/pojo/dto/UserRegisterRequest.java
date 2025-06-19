@@ -5,13 +5,16 @@ import lombok.Data;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 /**
  * @author wipe
  * @date 2025/6/17 下午7:12
  */
 @Data
-public class UserRegisterRequest {
+public class UserRegisterRequest implements Serializable {
+
+    private static final long serialVersionUID = -6352448320386017676L;
 
     @Pattern(regexp = "^[A-Za-z][A-Za-z0-9_]{3,9}$", message = "用户名长度应为 4-10，且以大小写字母开头")
     private String username;

@@ -8,9 +8,9 @@ import com.wipe.userservice.pojo.vo.UserVo;
  * @author wipe
  * @date 2025/6/18 下午2:50
  */
-public class UserHolder {
+public class UserContextHolder {
 
-    private UserHolder() {
+    private UserContextHolder() {
     }
 
     private static final ThreadLocal<UserVo> USER_HOLDER = new ThreadLocal<>();

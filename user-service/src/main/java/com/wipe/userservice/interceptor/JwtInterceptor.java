@@ -5,8 +5,8 @@ import cn.hutool.http.Header;
 import com.wipe.commonmodel.enums.EnumStatusCode;
 import com.wipe.commonmodel.util.ThrowUtil;
 import com.wipe.userservice.pojo.vo.UserVo;
-import com.wipe.userservice.util.JwtUtil;
-import com.wipe.userservice.util.UserHolder;
+import com.wipe.commonmodel.util.JwtUtil;
+import com.wipe.userservice.util.UserContextHolder;
 import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -38,13 +38,13 @@ public class JwtInterceptor implements HandlerInterceptor {
         UserVo userVo = new UserVo();
         userVo.setUserId(claims.get("userId", Long.class));
         userVo.setUsername(claims.get("username", String.class));
-        UserHolder.set(userVo);
+        UserContextHolder.set(userVo);
         return true;
 
     }
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        UserHolder.remove();
+        UserContextHolder.remove();
     }
 }

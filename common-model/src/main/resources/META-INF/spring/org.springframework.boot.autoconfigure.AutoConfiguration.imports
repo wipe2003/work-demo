@@ -1,2 +1,3 @@
 com.wipe.commonmodel.exception.GlobalExceptionHandler
 com.wipe.commonmodel.config.CorsConfig
+com.wipe.commonmodel.util.JwtUtil

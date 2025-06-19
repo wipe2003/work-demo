@@ -17,10 +17,11 @@ import com.wipe.userservice.pojo.domain.User;
 import com.wipe.userservice.pojo.dto.UserLoginRequest;
 import com.wipe.userservice.pojo.dto.UserQueryRequest;
 import com.wipe.userservice.pojo.dto.UserRegisterRequest;
+import com.wipe.userservice.pojo.dto.UserResetPasswordRequest;
 import com.wipe.userservice.pojo.vo.UserVo;
-import com.wipe.userservice.rpc.PermissionClient;
+import com.wipe.userservice.rpc.perm.PermissionClient;
 import com.wipe.userservice.service.UsersService;
-import com.wipe.userservice.util.JwtUtil;
+import com.wipe.commonmodel.util.JwtUtil;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.producer.SendCallback;
@@ -142,6 +143,30 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, User>
         userPage.setSearchCount(users.searchCount());
         userPage.setMaxLimit(users.maxLimit());
         return userPage;
+    }
+
+    @Override
+    public void resetPassword(UserResetPasswordRequest userResetPasswordRequest) {
+        // 判断用户是否存在
+        User user = getById(userResetPasswordRequest.getUserId());
+        ThrowUtil.throwIf(ObjUtil.isNull(user), EnumStatusCode.ERROR_OPERATION, "用户不存在");
+        // 比对密码
+        ThrowUtil.throwIf(
+                !encodePassword(userResetPasswordRequest.getOldPassword())
+                        .equals(user.getPassword()),
+                EnumStatusCode.ERROR_OPERATION, "密码错误");
+        String newPassword = userResetPasswordRequest.getNewPassword();
+        ThrowUtil.throwIf(
+                !newPassword.equals(userResetPasswordRequest.getConfirmPassword()),
+                EnumStatusCode.ERROR_OPERATION, "两次输入密码不一致");
+        //重新设置密码
+        newPassword = encodePassword(newPassword);
+        //保存密码
+        boolean update = lambdaUpdate()
+                .set(User::getPassword, newPassword)
+                .eq(User::getUserId, user.getUserId())
+                .update();
+        ThrowUtil.throwIf(!update, EnumStatusCode.ERROR_OPERATION, "密码重置失败");
     }
 
     @Override
