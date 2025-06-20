@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wipe.commonmodel.AxiosResult;
 import com.wipe.commonmodel.model.dto.BasePageRequest;
 import com.wipe.userservice.manager.perm.responsibility.HandleByPermManager;
+import com.wipe.userservice.manager.perm.strategy.PermStrategyManager;
 import com.wipe.userservice.pojo.domain.User;
 import com.wipe.userservice.pojo.dto.UserLoginRequest;
 import com.wipe.userservice.pojo.dto.UserRegisterRequest;
@@ -36,6 +37,9 @@ public class UserController {
 
     @Resource
     private HandleByPermManager handleByPermManager;
+
+    @Resource
+    private PermStrategyManager permStrategyManager;
 
     @Resource
     private PermissionClient permissionClient;
@@ -101,6 +105,7 @@ public class UserController {
         // 但如果中途用户权限码被修改，则会出问题
         String roleCode = usersService.getCurrentRoleCode();
         User userInfo = handleByPermManager.getUserInfo(roleCode, userId);
+//        User userInfo = permStrategyManager.getUserInfo(userId);
         return AxiosResult.success(UserVo.toUserVo(userInfo));
     }
 

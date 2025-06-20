@@ -36,19 +36,19 @@ knife4j:
         api-rule: package
         api-rule-resources:
           - com.wipe.loggingservice.controller
-seata:
-  data-source-proxy-mode: AT
-  registry:
-    nacos:
-      application: seata-server
-      group: public
-      server-addr: 127.0.0.1:8848
-  tx-service-group: default-tx-group
-  service:
-    vgroup-mapping:
-      default-tx-group: sh
-    grouplist:
-      sh: 127.0.0.1:8091
+#seata:
+#  data-source-proxy-mode: AT
+#  registry:
+#    nacos:
+#      application: seata-server
+#      group: public
+#      server-addr: 127.0.0.1:8848
+#  tx-service-group: default-tx-group
+#  service:
+#    vgroup-mapping:
+#      default-tx-group: sh
+#    grouplist:
+#      sh: 127.0.0.1:8091
 rocketmq:
   name-server: localhost:9876
 

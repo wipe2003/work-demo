@@ -11,6 +11,7 @@ import com.wipe.commonmodel.constant.TopicConstant;
 import com.wipe.commonmodel.enums.EnumStatusCode;
 import com.wipe.commonmodel.exception.ServiceException;
 import com.wipe.commonmodel.model.dto.BasePageRequest;
+import com.wipe.commonmodel.util.JwtUtil;
 import com.wipe.commonmodel.util.ThrowUtil;
 import com.wipe.userservice.manager.perm.responsibility.HandleByPermManager;
 import com.wipe.userservice.mapper.UsersMapper;
@@ -22,7 +23,6 @@ import com.wipe.userservice.pojo.dto.UserResetPasswordRequest;
 import com.wipe.userservice.pojo.vo.UserVo;
 import com.wipe.userservice.rpc.perm.PermissionClient;
 import com.wipe.userservice.service.UsersService;
-import com.wipe.commonmodel.util.JwtUtil;
 import com.wipe.userservice.util.UserContextHolder;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
@@ -60,6 +60,10 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, User>
     @Resource
     private HandleByPermManager handleByPermManager;
 
+//    @Resource
+//    @Lazy
+//    private PermStrategyManager permStrategyManager;
+
     @Resource
     private JwtUtil jwtUtil;
 
@@ -88,12 +92,12 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, User>
         ThrowUtil.throwIf(!save(user), EnumStatusCode.ERROR_OPERATION, "注册失败");
         permissionClient.bindDefaultRole(user.getUserId());
         // 发送消息记录日志
-
         String format = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
         Map<String, Object> payload = Map.of(
                 "user_id", user.getUserId(),
-                "action", format + ": 用户注册: " + user.getUsername(),
-                "detail", "插入用户注册记录"
+                "action", "user_register:" + format,
+                "detail", UserVo.toUserVo(user).toString()
         );
         rocketMQTemplate.asyncSend(TopicConstant.USER_REGISTER_TOPIC, payload,
                 new SendCallback() {
@@ -136,6 +140,8 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, User>
         // 获取用户列表
         Page<User> users = handleByPermManager.getUsers(
                 roleCode, pageRequest.getCurrent(), pageRequest.getSize());
+//        Page<User> users =
+//                permStrategyManager.getUsers(pageRequest.getCurrent(), pageRequest.getSize());
         // 脱敏处理
         List<UserVo> collect = users.getRecords()
                 .stream().map(UserVo::toUserVo)

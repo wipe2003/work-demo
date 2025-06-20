@@ -15,6 +15,10 @@ public class UserVo {
 
     private String username;
 
+    private String email;
+
+    private String phone;
+
     public static UserVo toUserVo(User user) {
         UserVo userVo = new UserVo();
         BeanUtil.copyProperties(user, userVo);
