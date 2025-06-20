@@ -1,4 +1,4 @@
-package com.wipe.userservice.manager.perm;
+package com.wipe.userservice.manager.perm.responsibility;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -59,7 +59,7 @@ public class SuperAdminHandler extends AbstractPermissionHandler {
      */
     @Override
     protected void modifyPassword(UserResetPasswordRequest userResetPasswordRequest) {
-        getUsersService().resetPassword(userResetPasswordRequest);
+        getUsersService().resetPasswordDirectly(userResetPasswordRequest);
     }
 
     @Override

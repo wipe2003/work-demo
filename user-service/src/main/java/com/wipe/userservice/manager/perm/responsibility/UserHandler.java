@@ -1,4 +1,4 @@
-package com.wipe.userservice.manager.perm;
+package com.wipe.userservice.manager.perm.responsibility;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;

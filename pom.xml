@@ -37,6 +37,7 @@
     <properties>
         <java.version>11</java.version>
         <knife4j.version>4.4.0</knife4j.version>
+        <rocketmq.version>2.3.3</rocketmq.version>
         <sharding-sphere.version>5.2.0</sharding-sphere.version>
         <spring-cloud.version>2021.0.4</spring-cloud.version>
         <spring-cloud-alibaba.version>2021.0.4.0</spring-cloud-alibaba.version>
@@ -130,6 +131,11 @@
                 <groupId>org.apache.shardingsphere</groupId>
                 <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
                 <version>${sharding-sphere.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.rocketmq</groupId>
+                <artifactId>rocketmq-spring-boot-starter</artifactId>
+                <version>${rocketmq.version}</version>
             </dependency>
             <dependency>
                 <groupId>cn.hutool</groupId>

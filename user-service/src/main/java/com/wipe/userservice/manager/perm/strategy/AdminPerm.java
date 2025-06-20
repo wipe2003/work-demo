@@ -1,4 +1,4 @@
-package com.wipe.userservice.manager.perm;
+package com.wipe.userservice.manager.perm.strategy;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,35 +12,39 @@ import com.wipe.userservice.pojo.dto.UserResetPasswordRequest;
 import com.wipe.userservice.pojo.dto.UserUpdateRequest;
 import com.wipe.userservice.rpc.perm.PermissionClient;
 import com.wipe.userservice.service.UsersService;
+import lombok.Data;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * @author wipe
- * @date 2025/6/18 下午3:43
+ * @date 2025/6/20 下午4:54
  */
+@Data
 @Component
-public class AdminHandler extends AbstractPermissionHandler {
+public class AdminPerm implements BasePermStrategy {
 
-    @Resource
-    private PermissionClient permissionClient;
+    private final String roleCode;
 
+    private final UsersService usersService;
 
-    public AdminHandler(UsersService usersService) {
-        super(EnumRole.ADMIN.getRoleCode(), usersService);
+    private final PermissionClient permissionClient;
+
+    public AdminPerm(UsersService usersService, PermissionClient permissionClient) {
+        this.usersService = usersService;
+        this.permissionClient = permissionClient;
+        this.roleCode = EnumRole.ADMIN.getRoleCode();
     }
 
-    /**
-     * 查询所有普通用户
-     * tip：
-     * 因为规定一个用户只有一个角色
-     * 所以这里可以设计冗余字段，冗余角色码，但不便于扩展（如一个用户多个角色）
-     */
     @Override
-    protected Page<User> listUser(int current, int size) {
+    public String getRoleCode() {
+        return this.roleCode;
+    }
+
+    @Override
+    public Page<User> getUsers(int current, int size) {
         // 查询拥有普通用户角色的用户
         UserRolePageRequest pageRequest = new UserRolePageRequest();
         pageRequest.setCurrent(current);
@@ -60,14 +64,8 @@ public class AdminHandler extends AbstractPermissionHandler {
         return userPage;
     }
 
-    /**
-     * 查询用户信息
-     *
-     * @param userId userId
-     * @return 普通用户信息
-     */
     @Override
-    protected User userInfo(Long userId) {
+    public User getUserInfo(Long userId) {
         // 权限检查
         checkRoleIsUser(userId);
         // 查询用户信息
@@ -75,7 +73,7 @@ public class AdminHandler extends AbstractPermissionHandler {
     }
 
     @Override
-    protected void modifyUserInfo(UserUpdateRequest userUpdateRequest) {
+    public void updateUserInfo(UserUpdateRequest userUpdateRequest) {
         checkRoleIsUser(userUpdateRequest.getUserId());
         User user = new User();
         BeanUtil.copyProperties(userUpdateRequest, user);
@@ -83,25 +81,16 @@ public class AdminHandler extends AbstractPermissionHandler {
     }
 
     @Override
-    protected void modifyPassword(UserResetPasswordRequest userResetPasswordRequest) {
+    public void resetPassword(UserResetPasswordRequest userResetPasswordRequest) {
         checkRoleIsUser(userResetPasswordRequest.getUserId());
-        getUsersService().resetPassword(userResetPasswordRequest);
+        getUsersService().resetPasswordDirectly(userResetPasswordRequest);
     }
 
-    /**
-     * 校验目标用户角色是否为普通用户
-     *
-     * @param userId userId
-     */
+
     private void checkRoleIsUser(Long userId) {
         String roleCode = permissionClient.roleCode(userId).getData();
         if (!EnumRole.USER.getRoleCode().equals(roleCode)) {
             throw new ServiceException(EnumStatusCode.ERROR_NO_AUTH);
         }
-    }
-
-    @Override
-    public int getOrder() {
-        return 1;
     }
 }

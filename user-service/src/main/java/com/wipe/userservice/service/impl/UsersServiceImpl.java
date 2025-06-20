@@ -9,9 +9,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wipe.commonmodel.constant.TopicConstant;
 import com.wipe.commonmodel.enums.EnumStatusCode;
+import com.wipe.commonmodel.exception.ServiceException;
 import com.wipe.commonmodel.model.dto.BasePageRequest;
 import com.wipe.commonmodel.util.ThrowUtil;
-import com.wipe.userservice.manager.perm.HandleByPermManager;
+import com.wipe.userservice.manager.perm.responsibility.HandleByPermManager;
 import com.wipe.userservice.mapper.UsersMapper;
 import com.wipe.userservice.pojo.domain.User;
 import com.wipe.userservice.pojo.dto.UserLoginRequest;
@@ -22,6 +23,7 @@ import com.wipe.userservice.pojo.vo.UserVo;
 import com.wipe.userservice.rpc.perm.PermissionClient;
 import com.wipe.userservice.service.UsersService;
 import com.wipe.commonmodel.util.JwtUtil;
+import com.wipe.userservice.util.UserContextHolder;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.producer.SendCallback;
@@ -86,10 +88,12 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, User>
         ThrowUtil.throwIf(!save(user), EnumStatusCode.ERROR_OPERATION, "注册失败");
         permissionClient.bindDefaultRole(user.getUserId());
         // 发送消息记录日志
+
+        String format = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         Map<String, Object> payload = Map.of(
                 "user_id", user.getUserId(),
-                "action", "用户注册",
-                "detail", now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                "action", format + ": 用户注册: " + user.getUsername(),
+                "detail", "插入用户注册记录"
         );
         rocketMQTemplate.asyncSend(TopicConstant.USER_REGISTER_TOPIC, payload,
                 new SendCallback() {
@@ -147,17 +151,24 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, User>
 
     @Override
     public void resetPassword(UserResetPasswordRequest userResetPasswordRequest) {
+        //参数校验
+        String oldPassword = userResetPasswordRequest.getOldPassword();
+        String newPassword = userResetPasswordRequest.getNewPassword();
+        String confirmPassword = userResetPasswordRequest.getConfirmPassword();
+        if (StrUtil.isBlank(oldPassword)) {
+            throw new ServiceException(EnumStatusCode.ERROR_PARAMS, "请输入旧密码");
+        }
         // 判断用户是否存在
         User user = getById(userResetPasswordRequest.getUserId());
         ThrowUtil.throwIf(ObjUtil.isNull(user), EnumStatusCode.ERROR_OPERATION, "用户不存在");
         // 比对密码
         ThrowUtil.throwIf(
-                !encodePassword(userResetPasswordRequest.getOldPassword())
-                        .equals(user.getPassword()),
+                !encodePassword(oldPassword).equals(user.getPassword()),
                 EnumStatusCode.ERROR_OPERATION, "密码错误");
-        String newPassword = userResetPasswordRequest.getNewPassword();
+        ThrowUtil.throwIf(oldPassword.equals(newPassword),
+                EnumStatusCode.ERROR_OPERATION, "新密码不能与旧密码相同");
         ThrowUtil.throwIf(
-                !newPassword.equals(userResetPasswordRequest.getConfirmPassword()),
+                !newPassword.equals(confirmPassword),
                 EnumStatusCode.ERROR_OPERATION, "两次输入密码不一致");
         //重新设置密码
         newPassword = encodePassword(newPassword);
@@ -167,6 +178,30 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, User>
                 .eq(User::getUserId, user.getUserId())
                 .update();
         ThrowUtil.throwIf(!update, EnumStatusCode.ERROR_OPERATION, "密码重置失败");
+    }
+
+    @Override
+    public void resetPasswordDirectly(UserResetPasswordRequest userResetPasswordRequest) {
+        // 判断用户存在
+        Long userId = userResetPasswordRequest.getUserId();
+        User user = getById(userId);
+        ThrowUtil.throwIf(ObjUtil.isNull(user), EnumStatusCode.ERROR_OPERATION, "用户不存在");
+        String newPassword = userResetPasswordRequest.getNewPassword();
+        String confirmPassword = userResetPasswordRequest.getConfirmPassword();
+        ThrowUtil.throwIf(!newPassword.equals(confirmPassword),
+                EnumStatusCode.ERROR_OPERATION, "两次输入密码不一致");
+        newPassword = encodePassword(newPassword);
+        boolean update = lambdaUpdate()
+                .set(User::getPassword, newPassword)
+                .eq(User::getUserId, userId)
+                .update();
+        ThrowUtil.throwIf(!update, EnumStatusCode.ERROR_OPERATION, "密码重置失败");
+    }
+
+    @Override
+    public String getCurrentRoleCode() {
+        Long userId = UserContextHolder.get().getUserId();
+        return permissionClient.roleCode(userId).getData();
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.wipe.userservice.manager.perm;
+package com.wipe.userservice.manager.perm.responsibility;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wipe.commonmodel.enums.EnumStatusCode;

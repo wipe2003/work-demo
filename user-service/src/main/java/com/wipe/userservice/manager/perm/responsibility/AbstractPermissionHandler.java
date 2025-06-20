@@ -1,4 +1,4 @@
-package com.wipe.userservice.manager.perm;
+package com.wipe.userservice.manager.perm.responsibility;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wipe.commonmodel.enums.EnumStatusCode;
@@ -93,6 +93,7 @@ public abstract class AbstractPermissionHandler implements Ordered {
         }
         if (next != null) {
             next.updateUserInfo(permissionCode, userUpdateRequest);
+            return;
         }
         throw new ServiceException(EnumStatusCode.ERROR_NOT_FOUND, "权限不存在");
     }
@@ -111,6 +112,7 @@ public abstract class AbstractPermissionHandler implements Ordered {
         }
         if (next != null) {
             next.resetPassword(permissionCode, userResetPasswordRequest);
+            return;
         }
         throw new ServiceException(EnumStatusCode.ERROR_NOT_FOUND, "权限不存在");
     }

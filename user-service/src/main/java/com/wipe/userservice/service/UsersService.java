@@ -45,9 +45,19 @@ public interface UsersService extends IService<User> {
     Page<UserVo> listUser(String roleCode, BasePageRequest pageRequest);
 
     /**
-     * 重置密码
+     * 重置密码（用户调用）
      */
     void resetPassword(UserResetPasswordRequest userResetPasswordRequest);
+
+    /**
+     * 重置密码（超管和管理员调用）
+     */
+    void resetPasswordDirectly(UserResetPasswordRequest userResetPasswordRequest);
+
+    /**
+     * 获取当前用户权限码
+     */
+    String getCurrentRoleCode();
 
     /**
      * 获取查询条件工具方法

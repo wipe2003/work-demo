@@ -22,7 +22,7 @@ public class UserContextHolder {
     public static UserVo get() {
         UserVo userVo = USER_HOLDER.get();
         if (userVo == null) {
-            throw new ServiceException(EnumStatusCode.ERROR_PARAMS);
+            throw new ServiceException(EnumStatusCode.ERROR_NOT_LOGIN);
         }
         return userVo;
     }

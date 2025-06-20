@@ -13,6 +13,9 @@ import com.wipe.permissionservice.aop.annotation.PermissionCheck;
 import com.wipe.permissionservice.pojo.dto.UserRoleQueryRequest;
 import com.wipe.permissionservice.service.PermissionService;
 import com.wipe.permissionservice.service.UserRolesService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -21,6 +24,7 @@ import javax.annotation.Resource;
  * @author wipe
  * @date 2025/6/16 下午4:26
  */
+@Api(tags = "权限管理")
 @RestController
 @RequestMapping("/perm")
 public class PermissionController {
@@ -37,6 +41,8 @@ public class PermissionController {
      * @param userId 用户id
      * @return 绑定结果
      */
+    @ApiOperation(value = "绑定用户角色")
+    @ApiImplicitParam(name = "userId", value = "用户Id", required = true)
     @PostMapping("/bind_default")
     public AxiosResult<Boolean> bindDefaultRole(@RequestParam("userId") Long userId) {
         ThrowUtil.throwIf(userId == null, EnumStatusCode.ERROR_PARAMS, "用户id不能为空");
@@ -49,6 +55,8 @@ public class PermissionController {
      *
      * @return 角色码
      */
+    @ApiOperation(value = "获取用户角色码")
+    @ApiImplicitParam(name = "userId", value = "用户Id", required = true)
     @GetMapping("/role_code")
     public AxiosResult<String> roleCode(@RequestParam("userId") Long userId) {
         String userRoleCode = permissionService.getUserRoleCode(userId);
@@ -62,6 +70,8 @@ public class PermissionController {
      * @param userId 用户id
      * @return 升级结果
      */
+    @ApiOperation(value = "升级为管理员(超管调用)")
+    @ApiImplicitParam(name = "userId", value = "用户Id", required = true)
     @PutMapping("/upgrade")
     @PermissionCheck(EnumRole.SUPER_ADMIN)
     public AxiosResult<Boolean> upgrade(@RequestParam("userId") Long userId) {
@@ -78,6 +88,8 @@ public class PermissionController {
      * @param userId 用户id
      * @return 降级结果
      */
+    @ApiOperation(value = "降级为普通用户(超管调用)")
+    @ApiImplicitParam(name = "userId", value = "用户Id", required = true)
     @PutMapping("/downgrade")
     @PermissionCheck(EnumRole.SUPER_ADMIN)
     public AxiosResult<Boolean> downgrade(@RequestParam("userId") Long userId) {
@@ -93,6 +105,7 @@ public class PermissionController {
      * @param userRolePageRequest 请求参数
      * @return 用户角色列表
      */
+    @ApiOperation(value = "获取用户角色列表")
     @PostMapping("/users")
     public AxiosResult<Page<UserRoles>> listUserRole(
             @RequestBody UserRolePageRequest userRolePageRequest) {

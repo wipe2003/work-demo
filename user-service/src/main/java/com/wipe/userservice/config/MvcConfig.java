@@ -29,7 +29,8 @@ public class MvcConfig implements WebMvcConfigurer {
                         "/webjars/**",
                         "/.well-known/**",
                         "/error/**",
-                        "/swagger-resources/**")
+                        "/swagger-resources/**",
+                        "/favicon.ico")
                 .order(-1);
     }
 }
