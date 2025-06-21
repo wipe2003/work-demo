@@ -2,6 +2,7 @@ package com.wipe.commonmodel;
 
 
 import com.wipe.commonmodel.enums.EnumStatusCode;
+import com.wipe.commonmodel.exception.ServiceException;
 import lombok.Data;
 
 /**
@@ -94,5 +95,10 @@ public class AxiosResult<T> {
         return error(EnumStatusCode.ERROR_OPERATION);
     }
 
+    public static void check(AxiosResult<?> result) {
+        if (!result.getCode().equals(EnumStatusCode.SUCCESS.getCode())) {
+            throw new ServiceException(EnumStatusCode.ERROR_OPERATION, result.getMsg());
+        }
+    }
 
 }

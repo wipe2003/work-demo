@@ -2,6 +2,7 @@ package com.wipe.userservice.manager.perm.responsibility;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.wipe.commonmodel.AxiosResult;
 import com.wipe.commonmodel.enums.EnumRole;
 import com.wipe.commonmodel.enums.EnumStatusCode;
 import com.wipe.commonmodel.exception.ServiceException;
@@ -46,7 +47,9 @@ public class AdminHandler extends AbstractPermissionHandler {
         pageRequest.setCurrent(current);
         pageRequest.setSize(size);
         pageRequest.setPermissionCode(EnumRole.USER.getRoleCode());
-        Page<UserRoles> userRolesPage = permissionClient.listUserRole(pageRequest).getData();
+        AxiosResult<Page<UserRoles>> result = permissionClient.listUserRole(pageRequest);
+        AxiosResult.check(result);
+        Page<UserRoles> userRolesPage = result.getData();
         // 聚合用户 id
         List<Long> ids = userRolesPage.getRecords()
                 .stream().map(UserRoles::getUserId).collect(Collectors.toList());
@@ -94,7 +97,9 @@ public class AdminHandler extends AbstractPermissionHandler {
      * @param userId userId
      */
     private void checkRoleIsUser(Long userId) {
-        String roleCode = permissionClient.roleCode(userId).getData();
+        AxiosResult<String> result = permissionClient.roleCode(userId);
+        AxiosResult.check(result);
+        String roleCode = result.getData();
         if (!EnumRole.USER.getRoleCode().equals(roleCode)) {
             throw new ServiceException(EnumStatusCode.ERROR_NO_AUTH);
         }

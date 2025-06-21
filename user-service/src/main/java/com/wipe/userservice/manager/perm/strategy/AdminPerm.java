@@ -8,7 +8,6 @@ import com.wipe.commonmodel.enums.EnumStatusCode;
 import com.wipe.commonmodel.exception.ServiceException;
 import com.wipe.commonmodel.model.domain.permission.UserRoles;
 import com.wipe.commonmodel.model.dto.permission.UserRolePageRequest;
-import com.wipe.commonmodel.util.AxiosResultCheck;
 import com.wipe.userservice.pojo.domain.User;
 import com.wipe.userservice.pojo.dto.UserResetPasswordRequest;
 import com.wipe.userservice.pojo.dto.UserUpdateRequest;
@@ -53,7 +52,7 @@ public class AdminPerm implements BasePermStrategy {
         pageRequest.setSize(size);
         pageRequest.setPermissionCode(EnumRole.USER.getRoleCode());
         AxiosResult<Page<UserRoles>> result = permissionClient.listUserRole(pageRequest);
-        AxiosResultCheck.check(result);
+        AxiosResult.check(result);
         Page<UserRoles> userRolesPage = result.getData();
         // 聚合用户 id
         List<Long> ids = userRolesPage.getRecords()
@@ -93,7 +92,7 @@ public class AdminPerm implements BasePermStrategy {
 
     private void checkRoleIsUser(Long userId) {
         AxiosResult<String> result = permissionClient.roleCode(userId);
-        AxiosResultCheck.check(result);
+        AxiosResult.check(result);
         String roleCode = result.getData();
         if (!EnumRole.USER.getRoleCode().equals(roleCode)) {
             throw new ServiceException(EnumStatusCode.ERROR_NO_AUTH);

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wipe.commonmodel.AxiosResult;
 import com.wipe.commonmodel.enums.EnumRole;
 import com.wipe.commonmodel.model.dto.BasePageRequest;
-import com.wipe.commonmodel.util.AxiosResultCheck;
 import com.wipe.userservice.aop.annotation.PermissionCheck;
 import com.wipe.userservice.manager.perm.responsibility.HandleByPermManager;
 import com.wipe.userservice.pojo.domain.User;
@@ -143,25 +142,29 @@ public class UserController {
         }
         // 获取当前用户角色码
         AxiosResult<String> result = permissionClient.roleCode(currentUserId);
-        AxiosResultCheck.check(result);
+        AxiosResult.check(result);
         String roleCode = result.getData();
         handleByPermManager.resetPassword(roleCode, userResetPasswordRequest);
         return AxiosResult.success(true);
     }
 
     @PutMapping("/down-perm")
+    @ApiOperation(value = "降级用户为普通用户(超管调用)")
+    @ApiImplicitParam(name = "userId", value = "用户Id", required = true)
     @PermissionCheck(EnumRole.SUPER_ADMIN)
     public AxiosResult<Boolean> downPerm(@RequestParam("userId") Long userId) {
         AxiosResult<Boolean> result = permissionClient.downgrade(userId);
-        AxiosResultCheck.check(result);
+        AxiosResult.check(result);
         return AxiosResult.success(true);
     }
 
     @PutMapping("/up-perm")
+    @ApiOperation(value = "升级用户为管理员(超管调用)")
+    @ApiImplicitParam(name = "userId", value = "用户Id", required = true)
     @PermissionCheck(EnumRole.SUPER_ADMIN)
     public AxiosResult<Boolean> upPerm(@RequestParam("userId") Long userId) {
         AxiosResult<Boolean> result = permissionClient.upgrade(userId);
-        AxiosResultCheck.check(result);
+        AxiosResult.check(result);
         return AxiosResult.success(true);
     }
 
