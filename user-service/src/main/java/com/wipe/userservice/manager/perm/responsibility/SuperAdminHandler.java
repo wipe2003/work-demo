@@ -51,7 +51,7 @@ public class SuperAdminHandler extends AbstractPermissionHandler {
     protected void modifyUserInfo(UserUpdateRequest userUpdateRequest) {
         User user = new User();
         BeanUtil.copyProperties(userUpdateRequest, user);
-        getUsersService().updateById(user);
+        getUsersService().updateByUserId(user);
     }
 
     /**

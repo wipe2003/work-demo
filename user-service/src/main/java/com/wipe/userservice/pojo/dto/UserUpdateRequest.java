@@ -19,7 +19,7 @@ public class UserUpdateRequest implements Serializable {
 
     private static final long serialVersionUID = -1498993246189351283L;
 
-    @ApiModelProperty(value = "用户Id")
+    @ApiModelProperty(value = "用户Id，不用填")
     private Long userId;
 
     @ApiModelProperty(value = "邮箱")

@@ -1,7 +1,7 @@
 package com.wipe;
 
 import cn.hutool.json.JSONUtil;
-import com.wipe.userservice.pojo.dto.UserRegisterRequest;
+import com.wipe.userservice.pojo.dto.UserUpdateRequest;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -12,10 +12,10 @@ public class JwtTest {
 
     @Test
     void name() {
-        UserRegisterRequest request = new UserRegisterRequest();
-        request.setUsername("wipe");
-        request.setPassword("123456");
-        request.setConfirmPassword("123456");
+        UserUpdateRequest request = new UserUpdateRequest();
+        request.setUserId(1L);
+        request.setPhone("123465");
+        request.setEmail("165161@163.com");
         System.out.println(JSONUtil.toJsonStr(request));
     }
 }

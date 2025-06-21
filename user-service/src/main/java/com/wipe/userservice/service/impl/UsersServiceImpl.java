@@ -215,6 +215,16 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, User>
     }
 
     @Override
+    public void updateByUserId(User user) {
+        User one = getById(user.getUserId());
+        if (one == null) {
+            throw new ServiceException(EnumStatusCode.ERROR_NOT_FOUND, "用户不存在");
+        }
+        ThrowUtil.throwIf(!updateById(user),
+                EnumStatusCode.ERROR_OPERATION, "更新用户信息失败");
+    }
+
+    @Override
     public LambdaQueryChainWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest) {
         LambdaQueryChainWrapper<User> wrapper = lambdaQuery();
         if (userQueryRequest == null) {

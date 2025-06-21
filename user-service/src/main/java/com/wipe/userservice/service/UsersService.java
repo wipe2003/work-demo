@@ -60,6 +60,11 @@ public interface UsersService extends IService<User> {
     String getCurrentRoleCode();
 
     /**
+     * 根据 Id 修改用户信息
+     */
+    void updateByUserId(User user);
+
+    /**
      * 获取查询条件工具方法
      *
      * @param userQueryRequest req

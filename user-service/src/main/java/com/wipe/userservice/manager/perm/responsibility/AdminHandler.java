@@ -82,7 +82,7 @@ public class AdminHandler extends AbstractPermissionHandler {
         checkRoleIsUser(userUpdateRequest.getUserId());
         User user = new User();
         BeanUtil.copyProperties(userUpdateRequest, user);
-        getUsersService().updateById(user);
+        getUsersService().updateByUserId(user);
     }
 
     @Override
