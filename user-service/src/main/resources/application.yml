@@ -46,7 +46,6 @@ mybatis-plus:
   mapper-locations: classpath:/mapper/*.xml
 
 jwt:
-  enable: true
   ttl: 259200
   issuer: wipe
   subject: auth-token
