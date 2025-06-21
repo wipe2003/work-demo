@@ -2,9 +2,11 @@ package com.wipe.userservice.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wipe.commonmodel.AxiosResult;
+import com.wipe.commonmodel.enums.EnumRole;
 import com.wipe.commonmodel.model.dto.BasePageRequest;
+import com.wipe.commonmodel.util.AxiosResultCheck;
+import com.wipe.userservice.aop.annotation.PermissionCheck;
 import com.wipe.userservice.manager.perm.responsibility.HandleByPermManager;
-import com.wipe.userservice.manager.perm.strategy.PermStrategyManager;
 import com.wipe.userservice.pojo.domain.User;
 import com.wipe.userservice.pojo.dto.UserLoginRequest;
 import com.wipe.userservice.pojo.dto.UserRegisterRequest;
@@ -38,8 +40,8 @@ public class UserController {
     @Resource
     private HandleByPermManager handleByPermManager;
 
-    @Resource
-    private PermStrategyManager permStrategyManager;
+//    @Resource
+//    private PermStrategyManager permStrategyManager;
 
     @Resource
     private PermissionClient permissionClient;
@@ -140,8 +142,26 @@ public class UserController {
             userResetPasswordRequest.setUserId(currentUserId);
         }
         // 获取当前用户角色码
-        String roleCode = permissionClient.roleCode(currentUserId).getData();
+        AxiosResult<String> result = permissionClient.roleCode(currentUserId);
+        AxiosResultCheck.check(result);
+        String roleCode = result.getData();
         handleByPermManager.resetPassword(roleCode, userResetPasswordRequest);
+        return AxiosResult.success(true);
+    }
+
+    @PutMapping("/down-perm")
+    @PermissionCheck(EnumRole.SUPER_ADMIN)
+    public AxiosResult<Boolean> downPerm(@RequestParam("userId") Long userId) {
+        AxiosResult<Boolean> result = permissionClient.downgrade(userId);
+        AxiosResultCheck.check(result);
+        return AxiosResult.success(true);
+    }
+
+    @PutMapping("/up-perm")
+    @PermissionCheck(EnumRole.SUPER_ADMIN)
+    public AxiosResult<Boolean> upPerm(@RequestParam("userId") Long userId) {
+        AxiosResult<Boolean> result = permissionClient.upgrade(userId);
+        AxiosResultCheck.check(result);
         return AxiosResult.success(true);
     }
 

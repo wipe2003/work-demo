@@ -1,4 +1,4 @@
-package com.wipe.commonmodel.util;
+package com.wipe.userservice.util;
 
 
 import cn.hutool.core.lang.UUID;

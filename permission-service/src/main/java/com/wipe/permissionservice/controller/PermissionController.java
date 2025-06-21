@@ -6,10 +6,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wipe.commonmodel.AxiosResult;
 import com.wipe.commonmodel.enums.EnumRole;
 import com.wipe.commonmodel.enums.EnumStatusCode;
-import com.wipe.commonmodel.util.ThrowUtil;
 import com.wipe.commonmodel.model.domain.permission.UserRoles;
 import com.wipe.commonmodel.model.dto.permission.UserRolePageRequest;
-import com.wipe.permissionservice.aop.annotation.PermissionCheck;
+import com.wipe.commonmodel.util.ThrowUtil;
 import com.wipe.permissionservice.pojo.dto.UserRoleQueryRequest;
 import com.wipe.permissionservice.service.PermissionService;
 import com.wipe.permissionservice.service.UserRolesService;
@@ -73,7 +72,6 @@ public class PermissionController {
     @ApiOperation(value = "升级为管理员(超管调用)")
     @ApiImplicitParam(name = "userId", value = "用户Id", required = true)
     @PutMapping("/upgrade")
-    @PermissionCheck(EnumRole.SUPER_ADMIN)
     public AxiosResult<Boolean> upgrade(@RequestParam("userId") Long userId) {
         ThrowUtil.throwIf(userId == null, EnumStatusCode.ERROR_PARAMS, "用户id不能为空");
         permissionService.upgradeToAdmin(userId);
@@ -91,7 +89,6 @@ public class PermissionController {
     @ApiOperation(value = "降级为普通用户(超管调用)")
     @ApiImplicitParam(name = "userId", value = "用户Id", required = true)
     @PutMapping("/downgrade")
-    @PermissionCheck(EnumRole.SUPER_ADMIN)
     public AxiosResult<Boolean> downgrade(@RequestParam("userId") Long userId) {
         ThrowUtil.throwIf(userId == null, EnumStatusCode.ERROR_PARAMS, "用户id不能为空");
         permissionService.downgradeToUser(userId);

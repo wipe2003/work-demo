@@ -1,8 +1,7 @@
 package com.wipe;
 
-import cn.hutool.core.bean.BeanUtil;
-import com.wipe.userservice.pojo.domain.User;
-import com.wipe.userservice.pojo.dto.UserUpdateRequest;
+import cn.hutool.json.JSONUtil;
+import com.wipe.userservice.pojo.dto.UserRegisterRequest;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -13,12 +12,10 @@ public class JwtTest {
 
     @Test
     void name() {
-        UserUpdateRequest userUpdateRequest = new UserUpdateRequest();
-        userUpdateRequest.setUserId(123L);
-        userUpdateRequest.setEmail("");
-        userUpdateRequest.setPhone("123456");
-        User user = new User();
-        BeanUtil.copyProperties(userUpdateRequest,user);
-        System.out.println(user);
+        UserRegisterRequest request = new UserRegisterRequest();
+        request.setUsername("wipe");
+        request.setPassword("123456");
+        request.setConfirmPassword("123456");
+        System.out.println(JSONUtil.toJsonStr(request));
     }
 }

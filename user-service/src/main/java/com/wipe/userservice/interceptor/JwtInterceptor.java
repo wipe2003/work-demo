@@ -5,7 +5,7 @@ import cn.hutool.http.Header;
 import com.wipe.commonmodel.enums.EnumStatusCode;
 import com.wipe.commonmodel.util.ThrowUtil;
 import com.wipe.userservice.pojo.vo.UserVo;
-import com.wipe.commonmodel.util.JwtUtil;
+import com.wipe.userservice.util.JwtUtil;
 import com.wipe.userservice.util.UserContextHolder;
 import io.jsonwebtoken.Claims;
 import org.springframework.stereotype.Component;

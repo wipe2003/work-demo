@@ -1,4 +1,4 @@
-package com.wipe.permissionservice.aop.annotation;
+package com.wipe.userservice.aop.annotation;
 
 import com.wipe.commonmodel.enums.EnumRole;
 

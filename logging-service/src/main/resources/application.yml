@@ -52,5 +52,3 @@ knife4j:
 rocketmq:
   name-server: localhost:9876
 
-jwt:
-  enable: false

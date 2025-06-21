@@ -32,8 +32,26 @@ public interface PermissionClient {
      *
      * @return 角色码
      */
-    @RequestMapping(value = "/perm/role_code",method = RequestMethod.GET)
+    @RequestMapping(value = "/perm/role_code", method = RequestMethod.GET)
     AxiosResult<String> roleCode(@RequestParam("userId") Long userId);
+
+    /**
+     * 升级为管理员
+     *
+     * @param userId 用户Id
+     * @return 升级结果
+     */
+    @RequestMapping(value = "/perm/upgrade", method = RequestMethod.PUT)
+    AxiosResult<Boolean> upgrade(@RequestParam("userId") Long userId);
+
+    /**
+     * 降级为普通用户
+     *
+     * @param userId 用户Id
+     * @return 降级结果
+     */
+    @RequestMapping(value = "/perm/downgrade", method = RequestMethod.PUT)
+    AxiosResult<Boolean> downgrade(@RequestParam("userId") Long userId);
 
     /**
      * 获取用户角色列表

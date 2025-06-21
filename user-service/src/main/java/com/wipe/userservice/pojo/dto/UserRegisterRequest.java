@@ -11,6 +11,7 @@ import java.io.Serializable;
 /**
  * @author wipe
  * @date 2025/6/17 下午7:12
+ * tip：正则表达式由 AI 生成
  */
 @Data
 @ApiModel(description = "用户注册请求参数")

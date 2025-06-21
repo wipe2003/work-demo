@@ -26,6 +26,16 @@ public class PermissionFallBackFactory implements FallbackFactory<PermissionClie
             }
 
             @Override
+            public AxiosResult<Boolean> upgrade(Long userId) {
+                return null;
+            }
+
+            @Override
+            public AxiosResult<Boolean> downgrade(Long userId) {
+                return null;
+            }
+
+            @Override
             public AxiosResult<Page<UserRoles>> listUserRole(UserRolePageRequest userRolePageRequest) {
                 return null;
             }

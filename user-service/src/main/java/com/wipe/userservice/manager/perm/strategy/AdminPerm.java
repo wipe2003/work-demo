@@ -2,11 +2,13 @@ package com.wipe.userservice.manager.perm.strategy;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.wipe.commonmodel.AxiosResult;
 import com.wipe.commonmodel.enums.EnumRole;
 import com.wipe.commonmodel.enums.EnumStatusCode;
 import com.wipe.commonmodel.exception.ServiceException;
 import com.wipe.commonmodel.model.domain.permission.UserRoles;
 import com.wipe.commonmodel.model.dto.permission.UserRolePageRequest;
+import com.wipe.commonmodel.util.AxiosResultCheck;
 import com.wipe.userservice.pojo.domain.User;
 import com.wipe.userservice.pojo.dto.UserResetPasswordRequest;
 import com.wipe.userservice.pojo.dto.UserUpdateRequest;
@@ -50,7 +52,9 @@ public class AdminPerm implements BasePermStrategy {
         pageRequest.setCurrent(current);
         pageRequest.setSize(size);
         pageRequest.setPermissionCode(EnumRole.USER.getRoleCode());
-        Page<UserRoles> userRolesPage = permissionClient.listUserRole(pageRequest).getData();
+        AxiosResult<Page<UserRoles>> result = permissionClient.listUserRole(pageRequest);
+        AxiosResultCheck.check(result);
+        Page<UserRoles> userRolesPage = result.getData();
         // 聚合用户 id
         List<Long> ids = userRolesPage.getRecords()
                 .stream().map(UserRoles::getUserId).collect(Collectors.toList());
@@ -88,7 +92,9 @@ public class AdminPerm implements BasePermStrategy {
 
 
     private void checkRoleIsUser(Long userId) {
-        String roleCode = permissionClient.roleCode(userId).getData();
+        AxiosResult<String> result = permissionClient.roleCode(userId);
+        AxiosResultCheck.check(result);
+        String roleCode = result.getData();
         if (!EnumRole.USER.getRoleCode().equals(roleCode)) {
             throw new ServiceException(EnumStatusCode.ERROR_NO_AUTH);
         }

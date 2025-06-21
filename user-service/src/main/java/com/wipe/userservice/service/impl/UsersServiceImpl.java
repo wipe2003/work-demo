@@ -7,11 +7,13 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.wipe.commonmodel.AxiosResult;
 import com.wipe.commonmodel.constant.TopicConstant;
 import com.wipe.commonmodel.enums.EnumStatusCode;
 import com.wipe.commonmodel.exception.ServiceException;
 import com.wipe.commonmodel.model.dto.BasePageRequest;
-import com.wipe.commonmodel.util.JwtUtil;
+import com.wipe.commonmodel.util.AxiosResultCheck;
+import com.wipe.userservice.util.JwtUtil;
 import com.wipe.commonmodel.util.ThrowUtil;
 import com.wipe.userservice.manager.perm.responsibility.HandleByPermManager;
 import com.wipe.userservice.mapper.UsersMapper;
@@ -90,7 +92,8 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, User>
         user.setGmtCreate(now);
         // 保存用户信息
         ThrowUtil.throwIf(!save(user), EnumStatusCode.ERROR_OPERATION, "注册失败");
-        permissionClient.bindDefaultRole(user.getUserId());
+        AxiosResult<Boolean> result = permissionClient.bindDefaultRole(user.getUserId());
+        AxiosResultCheck.check(result);
         // 发送消息记录日志
         String format = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
@@ -207,7 +210,9 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, User>
     @Override
     public String getCurrentRoleCode() {
         Long userId = UserContextHolder.get().getUserId();
-        return permissionClient.roleCode(userId).getData();
+        AxiosResult<String> result = permissionClient.roleCode(userId);
+        AxiosResultCheck.check(result);
+        return result.getData();
     }
 
     @Override
