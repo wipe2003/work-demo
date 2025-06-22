@@ -25,6 +25,9 @@ public abstract class AbstractPermissionHandler implements Ordered {
      */
     private AbstractPermissionHandler next;
 
+    /**
+     * 用户服务
+     */
     private UsersService usersService;
 
     /**
@@ -51,6 +54,9 @@ public abstract class AbstractPermissionHandler implements Ordered {
      */
     protected abstract Page<User> listUser(int current, int size);
 
+    /**
+     * 链式处理
+     */
     public final Page<User> getUsers(String permissionCode, int current, int size) {
         if (matchPermission(permissionCode)) {
             return listUser(current, size);

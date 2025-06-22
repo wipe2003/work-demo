@@ -69,7 +69,7 @@ public class PermissionController {
      * @param userId 用户id
      * @return 升级结果
      */
-    @ApiOperation(value = "升级为管理员(超管调用)")
+    @ApiOperation(value = "升级为管理员")
     @ApiImplicitParam(name = "userId", value = "用户Id", required = true)
     @PutMapping("/upgrade")
     public AxiosResult<Boolean> upgrade(@RequestParam("userId") Long userId) {
@@ -86,7 +86,7 @@ public class PermissionController {
      * @param userId 用户id
      * @return 降级结果
      */
-    @ApiOperation(value = "降级为普通用户(超管调用)")
+    @ApiOperation(value = "降级为普通用户")
     @ApiImplicitParam(name = "userId", value = "用户Id", required = true)
     @PutMapping("/downgrade")
     public AxiosResult<Boolean> downgrade(@RequestParam("userId") Long userId) {

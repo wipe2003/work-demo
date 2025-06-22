@@ -3,6 +3,8 @@ package com.wipe.userservice.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wipe.commonmodel.AxiosResult;
 import com.wipe.commonmodel.enums.EnumRole;
+import com.wipe.commonmodel.enums.EnumStatusCode;
+import com.wipe.commonmodel.exception.ServiceException;
 import com.wipe.commonmodel.model.dto.BasePageRequest;
 import com.wipe.userservice.aop.annotation.PermissionCheck;
 import com.wipe.userservice.manager.perm.responsibility.HandleByPermManager;
@@ -153,6 +155,9 @@ public class UserController {
     @ApiImplicitParam(name = "userId", value = "用户Id", required = true)
     @PermissionCheck(EnumRole.SUPER_ADMIN)
     public AxiosResult<Boolean> downPerm(@RequestParam("userId") Long userId) {
+        if (UserContextHolder.get().getUserId().equals(userId)) {
+            throw new ServiceException(EnumStatusCode.ERROR_OPERATION, "不能修改自己的权限");
+        }
         AxiosResult<Boolean> result = permissionClient.downgrade(userId);
         AxiosResult.check(result);
         return AxiosResult.success(true);
@@ -163,6 +168,9 @@ public class UserController {
     @ApiImplicitParam(name = "userId", value = "用户Id", required = true)
     @PermissionCheck(EnumRole.SUPER_ADMIN)
     public AxiosResult<Boolean> upPerm(@RequestParam("userId") Long userId) {
+        if (UserContextHolder.get().getUserId().equals(userId)) {
+            throw new ServiceException(EnumStatusCode.ERROR_OPERATION, "不能修改自己的权限");
+        }
         AxiosResult<Boolean> result = permissionClient.upgrade(userId);
         AxiosResult.check(result);
         return AxiosResult.success(true);

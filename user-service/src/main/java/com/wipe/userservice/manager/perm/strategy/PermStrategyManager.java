@@ -22,7 +22,8 @@ import java.util.stream.Collectors;
  * 策略管理类
  */
 @Component
-public class PermStrategyManager implements BasePermStrategy, ApplicationContextAware, CommandLineRunner {
+public class PermStrategyManager implements BasePermStrategy,
+        ApplicationContextAware, CommandLineRunner {
 
     private Map<String, BasePermStrategy> strategyMap;
 

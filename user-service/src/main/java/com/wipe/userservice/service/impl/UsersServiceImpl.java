@@ -95,7 +95,6 @@ public class UsersServiceImpl extends ServiceImpl<UsersMapper, User>
         AxiosResult.check(result);
         // 发送消息记录日志
         String format = now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
         Map<String, Object> payload = Map.of(
                 "user_id", user.getUserId(),
                 "action", "user_register:" + format,
